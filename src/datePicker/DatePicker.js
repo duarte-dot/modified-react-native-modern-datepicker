@@ -1,20 +1,20 @@
-import React, {createContext, useReducer, useContext, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
-import PropTypes from 'prop-types';
+import React, { createContext, useReducer, useContext, useState } from "react";
+import { View, StyleSheet } from "react-native";
+import PropTypes from "prop-types";
 
-import {Calendar, SelectMonth, SelectTime} from './components';
-import {utils} from '../utils';
+import { Calendar, SelectMonth, SelectTime } from "./components";
+import { utils } from "../utils";
 
 const options = {
-  backgroundColor: '#fff',
-  textHeaderColor: '#212c35',
-  textDefaultColor: '#2d4150',
-  selectedTextColor: '#fff',
-  mainColor: '#61dafb',
-  textSecondaryColor: '#7a92a5',
-  borderColor: 'rgba(122, 146, 165, 0.1)',
-  defaultFont: 'System',
-  headerFont: 'System',
+  backgroundColor: "#fff",
+  textHeaderColor: "#212c35",
+  textDefaultColor: "#2d4150",
+  selectedTextColor: "#fff",
+  mainColor: "#61dafb",
+  textSecondaryColor: "#7a92a5",
+  borderColor: "rgba(122, 146, 165, 0.1)",
+  defaultFont: "System",
+  headerFont: "System",
   textFontSize: 15,
   textHeaderFontSize: 17,
   headerAnimationDistance: 100,
@@ -23,14 +23,14 @@ const options = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'set':
-      return {...state, ...action};
-    case 'toggleMonth':
-      return {...state, monthOpen: !state.monthOpen};
-    case 'toggleTime':
-      return {...state, timeOpen: !state.timeOpen};
+    case "set":
+      return { ...state, ...action };
+    case "toggleMonth":
+      return { ...state, monthOpen: !state.monthOpen };
+    case "toggleTime":
+      return { ...state, timeOpen: !state.timeOpen };
     default:
-      throw new Error('Unexpected action');
+      throw new Error("Unexpected action");
   }
 };
 
@@ -41,20 +41,23 @@ const useCalendar = () => {
   return contextValue;
 };
 
-const DatePicker = props => {
+const DatePicker = (props) => {
   const calendarUtils = new utils(props);
   const contextValue = {
     ...props,
-    reverse: props.reverse === 'unset' ? !props.isGregorian : props.reverse,
-    options: {...options, ...props.options},
+    reverse: props.reverse === "unset" ? !props.isGregorian : props.reverse,
+    options: { ...options, ...props.options },
     utils: calendarUtils,
     state: useReducer(reducer, {
       activeDate: props.current || calendarUtils.getToday(),
       selectedDate: props.selected
         ? calendarUtils.getFormated(calendarUtils.getDate(props.selected))
-        : '',
-      monthOpen: props.mode === 'monthYear',
-      timeOpen: props.mode === 'time',
+        : "",
+      monthOpen: props.mode === "monthYear",
+      timeOpen: props.mode === "time",
+      currentMonth:
+        props.currentMonth ||
+        calendarUtils.getMonthYearText(props.current).split(" ")[0],
     }),
   };
   const [minHeight, setMinHeight] = useState(300);
@@ -63,7 +66,7 @@ const DatePicker = props => {
   const renderBody = () => {
     switch (contextValue.mode) {
       default:
-      case 'datepicker':
+      case "datepicker":
         return (
           <React.Fragment>
             <Calendar />
@@ -71,16 +74,16 @@ const DatePicker = props => {
             <SelectTime />
           </React.Fragment>
         );
-      case 'calendar':
+      case "calendar":
         return (
           <React.Fragment>
             <Calendar />
             <SelectMonth />
           </React.Fragment>
         );
-      case 'monthYear':
+      case "monthYear":
         return <SelectMonth />;
-      case 'time':
+      case "time":
         return <SelectTime />;
     }
   };
@@ -88,21 +91,24 @@ const DatePicker = props => {
   return (
     <CalendarContext.Provider value={contextValue}>
       <View
-        style={[style.container, {minHeight}, props.style]}
-        onLayout={({nativeEvent}) => setMinHeight(nativeEvent.layout.width * 0.9 + 55)}>
+        style={[style.container, { minHeight }, props.style]}
+        onLayout={({ nativeEvent }) =>
+          setMinHeight(nativeEvent.layout.width * 0.9 + 55)
+        }
+      >
         {renderBody()}
       </View>
     </CalendarContext.Provider>
   );
 };
 
-const styles = theme =>
+const styles = (theme) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.backgroundColor,
-      position: 'relative',
-      width: '100%',
-      overflow: 'hidden',
+      position: "relative",
+      width: "100%",
+      overflow: "hidden",
     },
   });
 
@@ -121,7 +127,7 @@ const optionsShape = {
   headerAnimationDistance: PropTypes.number,
   daysAnimationDistance: PropTypes.number,
 };
-const modeArray = ['datepicker', 'calendar', 'monthYear', 'time'];
+const modeArray = ["datepicker", "calendar", "monthYear", "time"];
 const minuteIntervalArray = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60];
 
 DatePicker.defaultProps = {
@@ -129,18 +135,18 @@ DatePicker.defaultProps = {
   onMonthYearChange: () => null,
   onTimeChange: () => null,
   onDateChange: () => null,
-  current: '',
-  selected: '',
-  minimumDate: '',
-  maximumDate: '',
+  current: "",
+  selected: "",
+  minimumDate: "",
+  maximumDate: "",
   selectorStartingYear: 0,
   selectorEndingYear: 3000,
   disableDateChange: false,
   isGregorian: true,
   configs: {},
-  reverse: 'unset',
+  reverse: "unset",
   options: {},
-  mode: 'datepicker',
+  mode: "datepicker",
   minuteInterval: 5,
   style: {},
 };
@@ -159,11 +165,11 @@ DatePicker.propTypes = {
   disableDateChange: PropTypes.bool,
   isGregorian: PropTypes.bool,
   configs: PropTypes.object,
-  reverse: PropTypes.oneOf([true, false, 'unset']),
+  reverse: PropTypes.oneOf([true, false, "unset"]),
   options: PropTypes.shape(optionsShape),
   mode: PropTypes.oneOf(modeArray),
   minuteInterval: PropTypes.oneOf(minuteIntervalArray),
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };
 
-export {DatePicker, CalendarContext, useCalendar};
+export { DatePicker, CalendarContext, useCalendar };

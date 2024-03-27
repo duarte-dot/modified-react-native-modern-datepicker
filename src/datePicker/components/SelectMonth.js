@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -9,9 +9,9 @@ import {
   Image,
   TextInput,
   I18nManager,
-} from 'react-native';
+} from "react-native";
 
-import {useCalendar} from '../DatePicker';
+import { useCalendar } from "../DatePicker";
 
 const SelectMonth = () => {
   const {
@@ -25,15 +25,20 @@ const SelectMonth = () => {
     minimumDate,
     maximumDate,
     onMonthYearChange,
+    currentMonth,
   } = useCalendar();
   const [mainState, setMainState] = state;
   const [show, setShow] = useState(false);
   const style = styles(options);
-  const [year, setYear] = useState(utils.getMonthYearText(mainState.activeDate).split(' ')[1]);
+  const [year, setYear] = useState(
+    utils.getMonthYearText(mainState.activeDate).split(" ")[1]
+  );
   const openAnimation = useRef(new Animated.Value(0)).current;
-  const currentMonth = Number(mainState.activeDate.split('/')[1]);
-  const prevDisable = maximumDate && utils.checkYearDisabled(Number(utils.toEnglish(year)), true);
-  const nextDisable = minimumDate && utils.checkYearDisabled(Number(utils.toEnglish(year)), false);
+  const prevDisable =
+    maximumDate && utils.checkYearDisabled(Number(utils.toEnglish(year)), true);
+  const nextDisable =
+    minimumDate &&
+    utils.checkYearDisabled(Number(utils.toEnglish(year)), false);
 
   useEffect(() => {
     mainState.monthOpen && setShow(true);
@@ -48,24 +53,29 @@ const SelectMonth = () => {
   }, [mainState.monthOpen, openAnimation]);
 
   useEffect(() => {
-    show && setYear(utils.getMonthYearText(mainState.activeDate).split(' ')[1]);
+    show && setYear(utils.getMonthYearText(mainState.activeDate).split(" ")[1]);
   }, [mainState.activeDate, utils, show]);
 
-  const onSelectMonth = month => {
+  const onSelectMonth = (month) => {
     if (show) {
       let y = Number(utils.toEnglish(year));
       const date = utils.getDate(utils.validYear(mainState.activeDate, y));
       const activeDate =
-        month !== null ? (isGregorian ? date.month(month) : date.jMonth(month)) : date;
+        month !== null
+          ? isGregorian
+            ? date.month(month)
+            : date.jMonth(month)
+          : date;
       setMainState({
-        type: 'set',
+        type: "set",
         activeDate: utils.getFormated(activeDate),
       });
-      month !== null && onMonthYearChange(utils.getFormated(activeDate, 'monthYearFormat'));
       month !== null &&
-        mode !== 'monthYear' &&
+        onMonthYearChange(utils.getFormated(activeDate, "monthYearFormat"));
+      month !== null &&
+        mode !== "monthYear" &&
         setMainState({
-          type: 'toggleMonth',
+          type: "toggleMonth",
         });
     }
   };
@@ -75,13 +85,13 @@ const SelectMonth = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prevDisable, nextDisable]);
 
-  const onChangeYear = text => {
+  const onChangeYear = (text) => {
     if (Number(utils.toEnglish(text))) {
       setYear(utils.toPersianNumber(text));
     }
   };
 
-  const onSelectYear = number => {
+  const onSelectYear = (number) => {
     let y = Number(utils.toEnglish(year)) + number;
     if (y > selectorEndingYear) {
       y = selectorEndingYear;
@@ -112,10 +122,15 @@ const SelectMonth = () => {
         <TouchableOpacity
           activeOpacity={0.7}
           style={style.arrowWrapper}
-          onPress={() => !nextDisable && onSelectYear(-1)}>
+          onPress={() => !nextDisable && onSelectYear(-1)}
+        >
           <Image
-            source={require('../../assets/arrow.png')}
-            style={[style.arrow, style.leftArrow, nextDisable && style.disableArrow]}
+            source={require("../../assets/arrow.png")}
+            style={[
+              style.arrow,
+              style.leftArrow,
+              nextDisable && style.disableArrow,
+            ]}
           />
         </TouchableOpacity>
         <TextInput
@@ -124,7 +139,7 @@ const SelectMonth = () => {
           maxLength={4}
           value={year}
           onBlur={() => onSelectYear(0)}
-          underlineColorAndroid={'rgba(0,0,0,0)'}
+          underlineColorAndroid={"rgba(0,0,0,0)"}
           returnKeyType="done"
           autoCorrect={false}
           blurOnSubmit
@@ -134,29 +149,38 @@ const SelectMonth = () => {
         <TouchableOpacity
           activeOpacity={0.7}
           style={style.arrowWrapper}
-          onPress={() => !prevDisable && onSelectYear(+1)}>
+          onPress={() => !prevDisable && onSelectYear(+1)}
+        >
           <Image
-            source={require('../../assets/arrow.png')}
+            source={require("../../assets/arrow.png")}
             style={[style.arrow, prevDisable && style.disableArrow]}
           />
         </TouchableOpacity>
       </View>
 
       <View style={[style.monthList, utils.flexDirection]}>
-        {[...Array(12).keys()].map(item => {
-          const disabled = utils.checkSelectMonthDisabled(mainState.activeDate, item);
+        {[...Array(12).keys()].map((item) => {
+          const disabled = utils.checkSelectMonthDisabled(
+            mainState.activeDate,
+            item
+          );
           return (
             <TouchableOpacity
               key={item}
               activeOpacity={0.8}
-              style={[style.item, currentMonth === item + 1 && style.selectedItem]}
-              onPress={() => !disabled && onSelectMonth(item)}>
+              style={[
+                style.item,
+                currentMonth === item + 1 && style.selectedItem,
+              ]}
+              onPress={() => !disabled && onSelectMonth(item)}
+            >
               <Text
                 style={[
                   style.itemText,
                   currentMonth === item + 1 && style.selectedItemText,
                   disabled && style.disabledItemText,
-                ]}>
+                ]}
+              >
                 {utils.getMonthName(item)}
               </Text>
             </TouchableOpacity>
@@ -167,41 +191,41 @@ const SelectMonth = () => {
   ) : null;
 };
 
-const styles = theme =>
+const styles = (theme) =>
   StyleSheet.create({
     container: {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
+      position: "absolute",
+      width: "100%",
+      height: "100%",
       top: 0,
       right: 0,
       backgroundColor: theme.backgroundColor,
       borderRadius: 10,
-      flexDirection: 'column',
+      flexDirection: "column",
       zIndex: 999,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
     },
     header: {
-      alignItems: 'center',
+      alignItems: "center",
       paddingHorizontal: 15,
-      justifyContent: 'space-between',
-      width: '80%',
-      flexDirection: 'row',
+      justifyContent: "space-between",
+      width: "80%",
+      flexDirection: "row",
     },
     reverseHeader: {
-      flexDirection: 'row-reverse',
+      flexDirection: "row-reverse",
     },
     monthList: {
-      flexWrap: 'wrap',
+      flexWrap: "wrap",
       margin: 25,
     },
     item: {
-      width: '30%',
-      marginHorizontal: '1.5%',
+      width: "30%",
+      marginHorizontal: "1.5%",
       paddingVertical: 8,
       marginVertical: 7,
-      alignItems: 'center',
+      alignItems: "center",
     },
     selectedItem: {
       backgroundColor: theme.mainColor,
@@ -220,7 +244,7 @@ const styles = theme =>
     },
     arrowWrapper: {
       padding: 13,
-      position: 'relative',
+      position: "relative",
       zIndex: 1,
       opacity: 1,
     },
@@ -237,7 +261,7 @@ const styles = theme =>
     leftArrow: {
       transform: [
         {
-          rotate: '180deg',
+          rotate: "180deg",
         },
       ],
     },
@@ -250,10 +274,10 @@ const styles = theme =>
       paddingHorizontal: 4,
       color: theme.textHeaderColor,
       fontFamily: theme.headerFont,
-      textAlignVertical: 'center',
+      textAlignVertical: "center",
       minWidth: 100,
-      textAlign: 'center',
+      textAlign: "center",
     },
   });
 
-export {SelectMonth};
+export { SelectMonth };
